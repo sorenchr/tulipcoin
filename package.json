@@ -1,0 +1,24 @@
+{
+  "name": "tulipcoin",
+  "version": "1.0.0",
+  "description": "Tulipcoin is the hot new cryptocurrency without all the fat of all the other popular cryptocurrencies on the market: security, performance, scalability and decentralisation.",
+  "main": "client.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sorenchr/tulipcoin.git"
+  },
+  "keywords": [
+    "cryptocurrency",
+    "tulipcoin"
+  ],
+  "author": "Søren Qvist Christensen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sorenchr/tulipcoin/issues"
+  },
+  "homepage": "https://github.com/sorenchr/tulipcoin#readme",
+  "dependencies": {}
+}
