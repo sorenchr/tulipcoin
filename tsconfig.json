@@ -1,0 +1,9 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "outDir": "build/",
+        "watch": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
+}
