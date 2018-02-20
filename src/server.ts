@@ -1,15 +1,17 @@
-import * as express from 'express';
+import * as http from 'http';
 import * as minimist from 'minimist';
 import { BlockChain } from './blockchain';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
-let port = args.p || 8080;
+const port = args.p || 8080;
 
 // Setup environment
-const app = express();
 const blockchain = new BlockChain();
 
-app.get('/transactions', (req, res) => res.send('list all transactions'));
+// Setup the server
+const server = http.createServer((req, res) => {
+    res.end('test');
+});
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+server.listen(port, () => console.log(`Server started on port ${port}`));
