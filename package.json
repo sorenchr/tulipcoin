@@ -22,9 +22,11 @@
   "homepage": "https://github.com/sorenchr/tulipcoin#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "keypair": "^1.0.1"
+    "keypair": "^1.0.1",
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "@types/node": "^9.4.6",
     "typescript": "^2.7.2"
   }
 }
