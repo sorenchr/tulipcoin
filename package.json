@@ -20,5 +20,11 @@
     "url": "https://github.com/sorenchr/tulipcoin/issues"
   },
   "homepage": "https://github.com/sorenchr/tulipcoin#readme",
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.16.2",
+    "keypair": "^1.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.7.2"
+  }
 }
