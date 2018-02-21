@@ -3,8 +3,11 @@ import { Transaction, CreateCoins } from './transactions';
 export class BlockChain {
     private transactions: Array<Transaction>;
 
+    constructor() {
+        this.transactions = [];
+    }
+
     append(ts: Transaction): void {
-        if (!this.isValid(ts)) throw new ValidationError('Transaction isn\'t valid');
         this.transactions.push(ts);
     }
 
