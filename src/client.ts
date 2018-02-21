@@ -20,13 +20,9 @@ if (args.type === 'create') {
     let amount = Number.parseInt(args._[0]);
     if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
 
-    // Create a "New coins" transaction and send it to the server
+    // Send a "Create coins" transaction to the server
     restClient.createCoins(amount, err => {
-        if (!!err) {
-            console.log('An error occurred while attempting to communicate with server:');
-            return console.log(err);
-        }
-
+        if (!!err) return console.log(`An error occurred while attempting to create coins: ${err}`);
         console.log(`${amount} coins were created succesfully`);
     });
 }
