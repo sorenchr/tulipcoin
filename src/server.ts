@@ -9,10 +9,19 @@ const port = args.p || 8080;
 
 // Setup environment
 const blockchain = new BlockChain();
-const restServer = new RestServer(port);
+const restServer = new RestServer(port, ts => blockchain.isValid(ts));
 
 // Handle created coins
-restServer.onCreateCoins(req => log(`${req.amount} new coins created for ${req.to}`));
+restServer.on('createCoins', ts => {
+    blockchain.append(ts);
+    log(`${ts.amount} new coins created for ${ts.to}`);
+});
+
+// Handle transferred coins
+restServer.on('transferCoins', ts => {
+    blockchain.append(ts);
+    log(`${ts.amount} coins transferred from ${ts.from} to ${ts.to}`);
+});
 
 /**
  * Logs a message to the console with a timestamp.
