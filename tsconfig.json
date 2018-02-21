@@ -1,6 +1,7 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
+        "lib": ["es7"],
         "outDir": "build/",
         "watch": true
     },
