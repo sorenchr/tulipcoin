@@ -4,6 +4,8 @@
   "description": "Tulipcoin is the hot new cryptocurrency without all the fat of all the other popular cryptocurrencies on the market: security, performance, scalability and decentralisation.",
   "main": "client.js",
   "scripts": {
+    "build": "./node_modules/typescript/bin/tsc",
+    "watch": "./node_modules/typescript/bin/tsc -watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
