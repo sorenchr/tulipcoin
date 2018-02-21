@@ -24,7 +24,7 @@ export class RestClient {
      * Executes a transaction POST request towards the server indicated by the user.
      * @param body The body that will be sent to the server.
      */
-    postRequest(body: Object): Promise<string> {
+    private postRequest(body: Object): Promise<string> {
         const bodyStringified = JSON.stringify(body);
 
         const options = {
