@@ -13,5 +13,3 @@ if (!!args.o) fs.writeFileSync(args.o, JSON.stringify(keys), 'utf8');
 
 // Display the keys to the user
 console.log(keys);
-
-
