@@ -1,6 +1,5 @@
-import * as http from 'http';
+import { RestClient } from './restclient';
 import * as minimist from 'minimist';
-import * as querystring from 'querystring';
 import * as fs from 'fs';
 
 // Parse arguments
@@ -10,8 +9,9 @@ if (!args.keys) exitWithMessage('--keys argument is required.');
 if (!args.type) exitWithMessage('--type arguments is required');
 if (!['create'].includes(args.type)) exitWithMessage('Unsupported type argument (create is supported)');
 
-// Load the keys from disk
+// Setup environment
 const keys = fs.readFileSync(args.keys);
+const restClient = new RestClient(args.host);
 
 // Check if new coins should be created
 if (args.type === 'create') {
@@ -21,8 +21,7 @@ if (args.type === 'create') {
     if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
 
     // Create a "New coins" transaction and send it to the server
-    const body = { type: "createCoins", amount: amount };
-    postRequest(body, (err, res) => {
+    restClient.createCoins(amount, err => {
         if (!!err) {
             console.log('An error occurred while attempting to communicate with server:');
             return console.log(err);
@@ -30,37 +29,6 @@ if (args.type === 'create') {
 
         console.log(`${amount} coins were created succesfully`);
     });
-}
-
-/**
- * Executes a transaction POST request towards the server indicated by the user.
- * @param body The body that will be sent to the server.
- * @param cb The callback that will be invoked when the transaction request has been handled.
- */
-function postRequest(body, cb) {
-    const bodyStringified = querystring.stringify(body);
-    const hostParts = args.host.split(':');
-
-    const options = {
-        hostname: hostParts[0],
-        port: hostParts[1],
-        path: '/transactions',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(bodyStringified)
-        }
-    };
-
-    let resData = '';
-    const req = http.request(options, res => {
-        res.setEncoding('utf8')
-        res.on('data', chunk => resData += chunk);
-        res.on('end', () => cb(null, resData));
-    });
-    req.on('error', e => cb(e));
-    req.write(bodyStringified);
-    req.end();
 }
 
 /**
