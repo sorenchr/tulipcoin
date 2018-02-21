@@ -1,30 +1,23 @@
-interface Transaction {
-    
-}
-
-export class TransferCoins implements Transaction {
-    constructor() {
-
-    }
-}
-
-export class CreateCoins implements Transaction {
-
-}
+import { Transaction, CreateCoins } from './transactions';
 
 export class BlockChain {
-    transactions: Array<Transaction>;
+    private transactions: Array<Transaction>;
 
-    append(ts: Transaction) {
-        if (!this.verify(ts)) throw new ValidationError('Transaction isn\'t valid'); 
-    }   
+    append(ts: Transaction): void {
+        if (!this.isValid(ts)) throw new ValidationError('Transaction isn\'t valid');
+        this.transactions.push(ts);
+    }
 
-    verify(ts: Transaction) {
-        
+    isValid(ts: Transaction): boolean {
+        return true;
     }
 
     head(): Transaction {
         return this.transactions.length > 0 ? this.transactions[this.transactions.length - 1] : null;
+    }
+
+    all(): Array<Transaction> {
+        return this.transactions;
     }
 }
 
