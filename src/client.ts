@@ -23,10 +23,9 @@ if (args.type === 'create') {
     let to = args._[1] || keys.public;
 
     // Send a "Create coins" transaction to the server
-    restClient.createCoins(amount, to, err => {
-        if (!!err) return console.log(`An error occurred while attempting to create coins: ${err}`);
-        console.log(`${amount} coins were created succesfully`);
-    });
+    restClient.createCoins(amount, to)
+        .then(() => console.log(`${amount} coins were created succesfully`))
+        .catch(err => console.log(`An error occurred while attempting to create coins: ${err}`));
 }
 
 /**
