@@ -11,8 +11,14 @@ export class RestClient {
         this.port = hostParts[1];
     }
 
-    createCoins(amount: Number, cb?: Function) {
-
+    /**
+     * 
+     * @param amount 
+     * @param cb 
+     */
+    createCoins(amount: Number, to: string, cb?: (err: Error) => any) {
+        const body = { amount: amount, to: to };
+        this.postRequest(body, cb);
     }
 
     /**
@@ -20,8 +26,8 @@ export class RestClient {
      * @param body The body that will be sent to the server.
      * @param cb The callback that will be invoked when the transaction request has been handled.
      */
-    postRequest(body: Object, cb?: Function) {
-        const bodyStringified = querystring.stringify(body);
+    postRequest(body: Object, cb?: (err: Error, resData?: string) => any) {
+        const bodyStringified = JSON.stringify(body);
 
         const options = {
             hostname: this.host,
