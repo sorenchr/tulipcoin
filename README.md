@@ -1,6 +1,6 @@
 # Tulipcoin
 
-Tulipcoin is the hot new cryptocurrency without all the fat of all the other popular cryptocurrencies on the market: security, performance, scalability and decentralisation.
+Tulipcoin is the hot new cryptocurrency without all the fat of all the other popular cryptocurrencies, such as: security, performance, scalability and decentralisation.
 
 ## Security
 
