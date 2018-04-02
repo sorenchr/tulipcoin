@@ -11,10 +11,6 @@ export class BlockChain {
         this.transactions.push(ts);
     }
 
-    isValid(ts: Transaction): boolean {
-        return true;
-    }
-
     head(): Transaction {
         return this.transactions.length > 0 ? this.transactions[this.transactions.length - 1] : null;
     }
@@ -23,5 +19,3 @@ export class BlockChain {
         return this.transactions;
     }
 }
-
-class ValidationError extends Error {}
