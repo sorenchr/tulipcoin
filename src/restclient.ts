@@ -1,5 +1,6 @@
 import * as http from 'http';
 import * as querystring from 'querystring';
+import { Transaction } from './transaction';
 
 export class RestClient {
     host: string;
@@ -12,34 +13,24 @@ export class RestClient {
     }
 
     /**
-     * 
-     * @param amount 
+     * Send a coin transfer transaction to the REST server.
+     * @param amount The amount to transfer.
+     * @param from The public key that the coins are transferred from.
+     * @param to The public key that the coins are transferred to.
+     * @param prevTx The previous transaction that contains the coins needed for this transaction.
      */
-    createCoins(amount: Number, to: string): Promise<string> {
-        const body = { amount: amount, to: to };
-        return this.request(body, '/coins', 'POST');
-    }
-
     transferCoins(amount: Number, from: string, to: string): Promise<string> {
-        const body = { amount: amount, from: from, to: to };
-        return this.request(body, '/coins', 'PUT');
-    }
-
-    /**
-     * Executes a HTTP request towards the server indicated by the user.
-     * @param body The body that will be sent to the server.
-     */
-    private request(body: Object, path: string, method: string): Promise<string> {
-        const bodyStringified = JSON.stringify(body);
+        let tx = new Transaction(to, from, amount, 0);
+        let body = JSON.stringify(tx.toJSON());
 
         const options = {
             hostname: this.host,
             port: this.port,
-            path: path,
-            method: method,
+            path: '/transactions',
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength(bodyStringified)
+                'Content-Length': Buffer.byteLength(body)
             }
         };
 
@@ -48,13 +39,10 @@ export class RestClient {
             const req = http.request(options, res => {
                 res.setEncoding('utf8')
                 res.on('data', chunk => resData += chunk);
-                res.on('end', () => {
-                    if (res.statusCode !== 200) return reject(resData);
-                    resolve(resData);
-                });
+                res.on('end', () => res.statusCode === 200 ? resolve(resData) : reject(resData));
             });
             req.on('error', err => reject(err));
-            req.write(bodyStringified);
+            req.write(body);
             req.end();
         });
     }

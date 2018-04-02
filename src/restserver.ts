@@ -1,61 +1,76 @@
 import * as http from 'http';
-import { CreateCoins, Transaction, TransferCoins } from './transactions';
-import * as url from 'url';
-import * as fs from 'fs';
-import Mustache from 'mustache';
+import { Transaction } from './transaction';
+import { Router } from './router';
+import { BlockChain } from './blockchain';
 
 export class RestServer {
-    private tsValidator: (ts: Transaction) => boolean;
+    private blockChain: BlockChain;
     private server: http.Server;
-    private callbacks;
+    private callback: (Transaction) => any;
 
     /**
      * Create a new REST server.
      * @param port The port for the server.
-     * @param tsValidator A function that validates incoming transactions.
+     * @param blockChain The blockchain associated with the server.
      */
-    constructor(port: Number, tsValidator: (ts: Transaction) => boolean) {
-        this.tsValidator = tsValidator;
-        this.callbacks = {};
+    constructor(port: Number, blockChain: BlockChain) {
+        this.blockChain = blockChain;
         let router = new Router();
 
-        router.addRoute('/coins', 'POST', (req, res) => this.addCoins(req, res));
-        router.addRoute('/coins', 'PUT', (req, res) => this.transferCoins(req, res));
+        router.addRoute('/transactions', 'GET', (req, res) => this.getTransactions(req, res))
+        router.addRoute('/transactions', 'POST', (req, res) => this.postTransaction(req, res));
 
         this.server = http.createServer((req, res) => router.route(req, res));
         this.server.listen(port, () => console.log(`Server started on port ${port}`));
     }
 
-    private async addCoins(req: http.IncomingMessage, res: http.ServerResponse) {
-        let body = await this.consumeResource(req);
-        let bodyJson = JSON.parse(body);
-        
-        let ts = new CreateCoins(bodyJson.to, bodyJson.amount);
-
-        if (!this.tsValidator(ts)) {
-            res.statusCode = 422;
-            res.write('422 Unprocessable Entity');
-            return res.end();
-        }
-
-        this.fire('createCoins', ts);
+    /**
+     * Retrieves all or some of the transactions in the blockchain.
+     * @param req The incoming request.
+     * @param res The outgoing response.
+     */
+    private getTransactions(req: http.IncomingMessage, res: http.ServerResponse) {
+        let jsonTxs = this.blockChain.all().map(this.padTxWithIndex);
+        res.write(JSON.stringify(jsonTxs));
         res.end();
     }
 
-    private async transferCoins(req: http.IncomingMessage, res: http.ServerResponse) {
-        let body = await this.consumeResource(req);
-        let bodyJson = JSON.parse(body);
-        
-        let ts = new TransferCoins(bodyJson.to, bodyJson.from, bodyJson.amount);
+    /**
+     * Pads a JSON representation of a transaction with its index in the blockchain.
+     * @param tx The transaction to pad.
+     * @param i The index of the transaction in the blockchain.
+     */
+    private padTxWithIndex(tx, i) {
+        let txJson = tx.toJSON();
+        txJson.index = i;
+        return txJson;
+    }
 
-        if (!this.tsValidator(ts)) {
+    /**
+     * Stores a new transaction in the blockchain.
+     * @param req The incoming request.
+     * @param res The outgoing response.
+     */
+    private async postTransaction(req: http.IncomingMessage, res: http.ServerResponse) {
+        let body = await this.consumeResource(req);
+        let tx = Transaction.fromJSONString(body);
+
+        if (!this.isValidTx(tx)) {
             res.statusCode = 422;
             res.write('422 Unprocessable Entity');
             return res.end();
         }
 
-        this.fire('transferCoins', ts);
+        this.callback(tx);
         res.end();
+    }
+
+    /**
+     * Checks if an incoming transaction is valid.
+     * @param tx The transaction to check.
+     */
+    private isValidTx(tx: Transaction): boolean {
+        return true;
     }
 
     /**
@@ -72,62 +87,10 @@ export class RestServer {
     }
 
     /**
-     * Register a callback for the given event.
-     * @param event The event that should occur.
+     * Register a callback for incoming transactions.
      * @param cb The callback that will handle the event.
      */
-    on(event: string, cb: Function) {
-        if (!(event in this.callbacks)) this.callbacks[event] = [];
-        this.callbacks[event].push(cb);
-    }
-
-    /**
-     * Fire an event and call the associated callbacks.
-     * @param event The event to fire.
-     * @param params The params associated with the event.
-     */
-    fire(event: string, ...params) {
-        if (!(event in this.callbacks)) return;
-        this.callbacks[event].forEach(c => c.apply(null, params));
-    }
-}
-
-/** 
- * A simple router abstraction that maps routes to functions.
-*/
-class Router {
-    private routes;
-    
-    constructor() {
-        this.routes = { };
-    }
-
-    /**
-     * Main entry point for the router. This method accepts an incoming message and routes it
-     * to the appropriate function registered earlier.
-     * @param req The incoming request.
-     * @param res The server response.
-     */
-    route(req: http.IncomingMessage, res: http.ServerResponse) {
-        let urlParts = url.parse(req.url);
-        if (!(urlParts.path in this.routes)) return this.error(req, res);
-        this.routes[urlParts.path][req.method](req, res);
-    }
-
-
-    addRoute(path: string, method: string, handler: (req: http.IncomingMessage, res: http.ServerResponse) => any) {
-        if (!(path in this.routes)) this.routes[path] = {};
-        this.routes[path][method] = handler;
-    }
-
-    /**
-     * The default response when a route does not exist for the incoming request.
-     * @param req The incoming request.
-     * @param res The server response.
-     */
-    error(req: http.IncomingMessage, res: http.ServerResponse) {
-        res.statusCode = 404;
-        res.write('404 Not Found');
-        res.end();
+    onTransaction(cb: (Transaction) => any) {
+        this.callback = cb;
     }
 }

@@ -2,25 +2,31 @@ import * as http from 'http';
 import * as minimist from 'minimist';
 import { BlockChain } from './blockchain';
 import { RestServer } from './restserver';
+import * as keypair from 'keypair';
+import * as fs from 'fs';
+import { Transaction } from './transaction';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
 const port = args.p || 8080;
+const amount = !!args.amount ? Number.parseInt(args.amount) : 100;
+if (!args.keys) exitWithMessage('--keys argument is required.');
+if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
+const keys = JSON.parse(fs.readFileSync(args.keys, 'utf8'));
 
 // Setup environment
-const blockchain = new BlockChain();
-const restServer = new RestServer(port, ts => blockchain.isValid(ts));
+const blockChain = new BlockChain();
+const restServer = new RestServer(port, blockChain);
 
-// Handle created coins
-restServer.on('createCoins', ts => {
-    blockchain.append(ts);
-    log(`${ts.amount} new coins created for ${ts.to}`);
-});
+// Setup initial transaction
+const initialTx = new Transaction(keys.public, keys.public, amount, 0);
+blockChain.append(initialTx);
+log(`Starting server with ${amount} coins.`);
 
 // Handle transferred coins
-restServer.on('transferCoins', ts => {
-    blockchain.append(ts);
-    log(`${ts.amount} coins transferred from ${ts.from} to ${ts.to}`);
+restServer.onTransaction(tx => {
+    blockChain.append(tx);
+    log(`${tx.amount} coins transferred from ${tx.from} to ${tx.to}.`);
 });
 
 /**
@@ -30,4 +36,13 @@ restServer.on('transferCoins', ts => {
 function log(msg) {
     let timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
     console.log(`[${timestamp}] ${msg}`);
+}
+
+/**
+ * Kills the running process with an error.
+ * @param msg The message to display to the user before exiting.
+ */
+function exitWithMessage(msg): void {
+    console.log(msg);
+    process.exit(1);
 }

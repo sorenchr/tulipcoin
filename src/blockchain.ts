@@ -1,4 +1,4 @@
-import { Transaction, CreateCoins } from './transactions';
+import { Transaction } from './transaction';
 
 export class BlockChain {
     private transactions: Array<Transaction>;
