@@ -5,6 +5,8 @@ import { RestServer } from './restserver';
 import * as keypair from 'keypair';
 import * as fs from 'fs';
 import { Transaction } from './transaction';
+import { log } from './logging';
+import { exitWithMessage } from './utilities';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
@@ -28,21 +30,3 @@ restServer.onTransaction(tx => {
     blockChain.append(tx);
     log(`${tx.amount} coins transferred from ${tx.from} to ${tx.to}.`);
 });
-
-/**
- * Logs a message to the console with a timestamp.
- * @param msg The message to log.
- */
-function log(msg) {
-    let timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    console.log(`[${timestamp}] ${msg}`);
-}
-
-/**
- * Kills the running process with an error.
- * @param msg The message to display to the user before exiting.
- */
-function exitWithMessage(msg): void {
-    console.log(msg);
-    process.exit(1);
-}

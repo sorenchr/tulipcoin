@@ -1,6 +1,8 @@
 import { RestClient } from './restclient';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
+import { log } from './logging';
+import { exitWithMessage } from './utilities';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
@@ -19,14 +21,5 @@ if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number')
 
 // Send a "Transfer coins" transaction to the server
 restClient.transferCoins(amount, keys.public, args.to)
-    .then(() => console.log(`${amount} coins were transferred succesfully`))
-    .catch(err => console.log(`An error occurred while attempting to transfer coins: ${err}`));
-
-/**
- * Kills the running process with an error.
- * @param msg The message to display to the user before exiting.
- */
-function exitWithMessage(msg): void {
-    console.log(msg);
-    process.exit(1);
-}
+    .then(() => log(`${amount} coins were transferred succesfully`))
+    .catch(err => log(`An error occurred while attempting to transfer coins: ${err}`));
