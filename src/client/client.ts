@@ -1,8 +1,8 @@
 import { RestClient } from './restclient';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
-import { log } from './logging';
-import { exitWithMessage } from './utilities';
+import { log } from '../logging';
+import { exitWithMessage } from '../utilities';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));

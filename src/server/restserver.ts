@@ -1,5 +1,5 @@
 import * as http from 'http';
-import { Transaction } from './transaction';
+import { Transaction } from '../transaction';
 import { Router } from './router';
 import { BlockChain } from './blockchain';
 import * as url from 'url';
@@ -34,12 +34,15 @@ export class RestServer {
     private getTransactions(req: http.IncomingMessage, res: http.ServerResponse) {
         let queryParams = querystring.parse(url.parse(req.url).query);
 
-        var jsonTxs;
+        var jsonTxs = this.blockChain.all();
+
+        if (!!queryParams.from && typeof queryParams.from === 'string') {
+            jsonTxs = jsonTxs.filter(tx => tx.from === queryParams.from);
+        } 
+        
         if (!!queryParams.to && typeof queryParams.to === 'string') {
-            jsonTxs = this.blockChain.to(queryParams.to);
-        } else {
-            jsonTxs = this.blockChain.all();
-        }
+            jsonTxs = jsonTxs.filter(tx => tx.to === queryParams.to);
+        } 
 
         res.write(JSON.stringify(jsonTxs));
         res.end();

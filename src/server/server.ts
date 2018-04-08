@@ -4,9 +4,9 @@ import { BlockChain } from './blockchain';
 import { RestServer } from './restserver';
 import * as keypair from 'keypair';
 import * as fs from 'fs';
-import { Transaction } from './transaction';
-import { log } from './logging';
-import { exitWithMessage } from './utilities';
+import { Transaction } from '../transaction';
+import { log } from '../logging';
+import { exitWithMessage } from '../utilities';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));

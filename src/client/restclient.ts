@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as querystring from 'querystring';
-import { Transaction } from './transaction';
+import { Transaction } from '../transaction';
 
 export class RestClient {
     host: string;
