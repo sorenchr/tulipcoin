@@ -2,6 +2,8 @@ import * as http from 'http';
 import { Transaction } from './transaction';
 import { Router } from './router';
 import { BlockChain } from './blockchain';
+import * as url from 'url';
+import * as querystring from 'querystring';
 
 export class RestServer {
     private blockChain: BlockChain;
@@ -30,20 +32,17 @@ export class RestServer {
      * @param res The outgoing response.
      */
     private getTransactions(req: http.IncomingMessage, res: http.ServerResponse) {
-        let jsonTxs = this.blockChain.all().map(this.padTxWithIndex);
+        let queryParams = querystring.parse(url.parse(req.url).query);
+
+        var jsonTxs;
+        if (!!queryParams.to && typeof queryParams.to === 'string') {
+            jsonTxs = this.blockChain.to(queryParams.to);
+        } else {
+            jsonTxs = this.blockChain.all();
+        }
+
         res.write(JSON.stringify(jsonTxs));
         res.end();
-    }
-
-    /**
-     * Pads a JSON representation of a transaction with its index in the blockchain.
-     * @param tx The transaction to pad.
-     * @param i The index of the transaction in the blockchain.
-     */
-    private padTxWithIndex(tx, i) {
-        let txJson = tx.toJSON();
-        txJson.index = i;
-        return txJson;
     }
 
     /**

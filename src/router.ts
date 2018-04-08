@@ -19,8 +19,8 @@ export class Router {
      */
     route(req: http.IncomingMessage, res: http.ServerResponse) {
         let urlParts = url.parse(req.url);
-        if (!(urlParts.path in this.routes)) return this.error(req, res);
-        this.routes[urlParts.path][req.method](req, res);
+        if (!(urlParts.pathname in this.routes)) return this.error(req, res);
+        this.routes[urlParts.pathname][req.method](req, res);
     }
 
     /**

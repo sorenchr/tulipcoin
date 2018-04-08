@@ -8,11 +8,12 @@ export class BlockChain {
     }
 
     append(ts: Transaction): void {
+        ts.id = this.transactions.length;
         this.transactions.push(ts);
     }
 
-    head(): Transaction {
-        return this.transactions.length > 0 ? this.transactions[this.transactions.length - 1] : null;
+    to(to: string): Array<Transaction> {
+        return this.transactions.filter(tx => tx.to === to);
     }
 
     all(): Array<Transaction> {
