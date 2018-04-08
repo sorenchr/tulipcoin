@@ -1,34 +1,42 @@
 export class Transaction {
     id?: Number;
-    to: string;
-    from: string;
-    amount: Number;
-    prevTx: Number;
+    input: Input;
+    outputs: Array<Output>;
+    prevTxId: Number;
 
-    constructor(to: string, from: string, amount: Number, prevTx: Number) {
-        this.to = to;
-        this.from = from;
-        this.amount = amount;
-        this.prevTx = prevTx;
+    constructor(input: Input, outputs: Array<Output>, prevTxId: Number, id?: Number) {
+        this.input = input;
+        this.outputs = outputs;
+        this.prevTxId = prevTxId;
+        this.id = id;
     }
 
-    toJSON(): any {
-        let obj = <any>{
-            to: this.to,
-            from: this.from,
-            amount: this.amount,
-            prevTx: this.prevTx
-        };
-
-        if (!!this.id) obj.id = this.id;
-        
-        return obj;
+    toJSONString(): any {
+        return JSON.stringify(this);
     }
 
     static fromJSONString(jsonString): Transaction {
         let json = JSON.parse(jsonString);
-        let tx = new Transaction(json.to, json.from, json.amount, json.prevTx);
-        if (!!json.id) tx.id = json.id;
-        return tx;
+        return new Transaction(json.input, json.outputs, json.prevTxId, json.id);
+    }
+}
+
+export class Input {
+    txId: Number;
+    outputId: Number;
+
+    constructor(txId: Number, outputId: Number) {
+        this.txId = txId;
+        this.outputId = outputId;
+    }
+}
+
+export class Output {
+    receiver: string;
+    amount: Number;
+
+    constructor(receiver: string, amount: Number) {
+        this.receiver = receiver;
+        this.amount = amount;
     }
 }
