@@ -34,7 +34,7 @@ Then build the source code (uses TypeScript to compile):
 $ npm build
 ```
 
-It's also possible to setup a TypeScript watch that compiles automatically on changes to source files:
+It's also possible to setup a TypeScript watcher that compiles automatically on changes to source files:
 
 ```console
 $ npm watch
