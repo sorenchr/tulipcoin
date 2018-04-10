@@ -1,11 +1,11 @@
 export class Transaction {
     id?: Number;
-    input: Input;
+    inputs: Array<Input>;
     outputs: Array<Output>;
     prevTxId: Number;
 
-    constructor(input: Input, outputs: Array<Output>, prevTxId: Number, id?: Number) {
-        this.input = input;
+    constructor(inputs: Array<Input>, outputs: Array<Output>, prevTxId: Number, id?: Number) {
+        this.inputs = inputs;
         this.outputs = outputs;
         this.prevTxId = prevTxId;
         this.id = id;
@@ -17,7 +17,7 @@ export class Transaction {
 
     static fromJSONString(jsonString): Transaction {
         let json = JSON.parse(jsonString);
-        return new Transaction(json.input, json.outputs, json.prevTxId, json.id);
+        return new Transaction(json.inputs, json.outputs, json.prevTxId, json.id);
     }
 }
 
