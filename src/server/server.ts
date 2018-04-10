@@ -1,4 +1,3 @@
-import * as http from 'http';
 import * as minimist from 'minimist';
 import { BlockChain } from './blockchain';
 import { RestServer } from './restserver';
