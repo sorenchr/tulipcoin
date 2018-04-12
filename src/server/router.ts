@@ -23,7 +23,7 @@ export class Router {
     route(req: http.IncomingMessage, res: http.ServerResponse) {
         let urlParts = url.parse(req.url);
 
-        logger.info(`Incoming request for ${urlParts.pathname}.`);
+        logger.info(`Incoming ${req.method} request for ${urlParts.pathname}.`);
 
         // Check if one of the routes match the incoming request path
         let route = this.routes.find(r => r.matches(urlParts.pathname, req.method) !== null);
