@@ -1,3 +1,7 @@
+import { Logger } from "../logger";
+
+const logger = new Logger('utxo');
+
 /**
  * Unspent transaction output.
  */
@@ -30,13 +34,19 @@ export class UTXOPool {
 
     add(utxo: UTXO) {
         this.utxos.push(utxo);
+        logger.info(`Added UTXO to pool with transaction id: ${utxo.txId} and output index: ${utxo.outputIndex}.`);
     }
 
     remove(utxo: UTXO) {
         this.utxos = this.utxos.filter(val => !val.equals(utxo));
+        logger.info(`Removed UTXO to pool with transaction id: ${utxo.txId} and output index: ${utxo.outputIndex}.`);
     }
 
-    contains(utxo: UTXO) {
+    contains(utxo: UTXO): boolean {
         return this.utxos.findIndex(val => val.equals(utxo)) !== -1;
+    }
+
+    all(): Array<UTXO> {
+        return this.utxos.slice();
     }
 }
