@@ -3,9 +3,11 @@ import { BlockChain } from './blockchain';
 import { RestServer } from './restserver';
 import * as keypair from 'keypair';
 import * as fs from 'fs';
-import { Transaction } from '../transaction';
-import { log } from '../logging';
+import { Transaction, Output } from '../transaction';
 import { exitWithMessage } from '../utilities';
+import { Logger } from '../logger';
+import { UTXOPool, UTXO } from './utxo';
+import { TxValidator } from './txvalidator';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
@@ -17,15 +19,14 @@ const keys = JSON.parse(fs.readFileSync(args.keys, 'utf8'));
 
 // Setup environment
 const blockChain = new BlockChain();
-const restServer = new RestServer(port, blockChain);
+const utxoPool = new UTXOPool();
+const txValidator = new TxValidator(utxoPool);
+const restServer = new RestServer(port, txValidator, blockChain, utxoPool);
+const logger = new Logger('server');
 
 // Setup initial transaction
-const initialTx = new Transaction(keys.public, keys.public, amount, 0);
+const outputs = [new Output(keys.public, amount)];
+const initialTx = new Transaction([], outputs, 0, 0);
 blockChain.append(initialTx);
-log(`Starting server with ${amount} coins.`);
-
-// Handle transferred coins
-restServer.onTransaction(tx => {
-    blockChain.append(tx);
-    log(`${tx.amount} coins transferred from ${tx.from} to ${tx.to}.`);
-});
+outputs.forEach((o, index) => utxoPool.add(new UTXO(initialTx.id, index)));
+logger.info(`Starting server with ${amount} coins.`);
