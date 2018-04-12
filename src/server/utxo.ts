@@ -39,7 +39,7 @@ export class UTXOPool {
 
     remove(utxo: UTXO) {
         this.utxos = this.utxos.filter(val => !val.equals(utxo));
-        logger.info(`Removed UTXO to pool with transaction id: ${utxo.txId} and output index: ${utxo.outputIndex}.`);
+        logger.info(`Removed UTXO from pool with transaction id: ${utxo.txId} and output index: ${utxo.outputIndex}.`);
     }
 
     contains(utxo: UTXO): boolean {
