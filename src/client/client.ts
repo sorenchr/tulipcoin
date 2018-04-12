@@ -1,25 +1,51 @@
 import { RestClient } from './restclient';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
-import { log } from '../logging';
 import { exitWithMessage } from '../utilities';
+import { Logger } from '../logger';
+import { Input, Output } from '../transaction';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
-if (!args.host) exitWithMessage('--host argument is required');
+if (!args.host) exitWithMessage('--host argument is required.');
 if (!args.keys) exitWithMessage('--keys argument is required.');
-if (!args.to) exitWithMessage('--to argument is required');
-if (!args.amount) exitWithMessage('--amount argument is required');
+if (!args.cmd) exitWithMessage('--cmd argument is required.');
+if (!['wallet', 'transfer'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\' or \'transfer\'.');
 
 // Setup environment
 const keys = JSON.parse(fs.readFileSync(args.keys, 'utf8'));
 const restClient = new RestClient(args.host);
+const logger = new Logger('client');
 
-// Parse amount argument
-let amount = Number.parseInt(args.amount);
-if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
+// Check if this is a 'wallet' command
+if (args.cmd === 'wallet') {
+    restClient.getWallet(keys.public)
+        .then(res => {
+            let total = res.reduce((acc, o) => acc + o.amount, 0);
+            console.log('  ' + `You have the following ${total} unspent coins:`);
+            res.forEach(o => console.log(`  [\x1b[32m${o.amount}\x1b[0m] \x1b[2m(transaction ID: ${o.txId}, output index: ${o.outputIndex})\x1b[0m`));
+        })
+        .catch(err => logger.error(`An error occurred while attempting to retrieve wallet: ${err}.`));
+}
 
-// Send a "Transfer coins" transaction to the server
-restClient.transferCoins(amount, keys.public, args.to)
-    .then(() => log(`${amount} coins were transferred succesfully`))
-    .catch(err => log(`An error occurred while attempting to transfer coins: ${err}`));
+// Check if this is a 'transfer' command
+if (args.cmd === 'transfer') {
+    // Parse and validate additional arguments
+    if (!args.inputs) exitWithMessage('--inputs argument is required.');
+    if (!args.outputs) exitWithMessage('--outputs argument is required.');
+    var inputs = args.inputs.split(',');
+    var outputs = args.outputs.split(',');
+    if (!inputs.every(i => /\d+:\d+$/g.test(i))) exitWithMessage('--inputs must be in the format txId1:outputIndex, txId2:outputIndex, ...');
+    if (!outputs.every(o => /.+:\d+$/g.test(o))) exitWithMessage('--outputs must be in the format publicKey1:amount, publicKey2: amount, ...');
+    inputs = inputs.map(i => i.split(':'));
+    outputs = outputs.map(o => o.split(':'));
+
+    // Create inputs and outputs
+    let txInputs = inputs.map(i => new Input(Number(i[0]), Number(i[1])));
+    let txOutputs = outputs.map(o => new Output(o[0], Number(o[1])));
+
+    // Send a "Transfer coins" transaction to the server
+    restClient.postTransaction(txInputs, txOutputs)
+        .then(() => logger.info(`Transaction was succesfully added to blockchain.`))
+        .catch(err => logger.error(`An error occurred while attempting to transfer coins: ${err}.`));
+}
