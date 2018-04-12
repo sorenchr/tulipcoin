@@ -1,5 +1,8 @@
 import { UTXOPool } from './utxo';
 import { Transaction } from '../transaction';
+import { Logger } from '../logger';
+
+const logger = new Logger('txvalidator');
 
 export class TxValidator {
     private utxoPool: UTXOPool;
@@ -9,6 +12,7 @@ export class TxValidator {
     }
 
     isValid(tx: Transaction) {
+        logger.info('Transaction validated.');
         return true;
     }
 }
