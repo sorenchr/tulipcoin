@@ -1,10 +1,10 @@
 export class Transaction {
-    id?: Number;
+    id?: number;
     inputs: Array<Input>;
     outputs: Array<Output>;
-    prevTxId: Number;
+    prevTxId?: number;
 
-    constructor(inputs: Array<Input>, outputs: Array<Output>, prevTxId: Number, id?: Number) {
+    constructor(inputs: Array<Input>, outputs: Array<Output>, prevTxId?: number, id?: number) {
         this.inputs = inputs;
         this.outputs = outputs;
         this.prevTxId = prevTxId;
@@ -22,10 +22,10 @@ export class Transaction {
 }
 
 export class Input {
-    txId: Number;
-    outputId: Number;
+    txId: number;
+    outputId: number;
 
-    constructor(txId: Number, outputId: Number) {
+    constructor(txId: number, outputId: number) {
         this.txId = txId;
         this.outputId = outputId;
     }
@@ -33,9 +33,9 @@ export class Input {
 
 export class Output {
     receiver: string;
-    amount: Number;
+    amount: number;
 
-    constructor(receiver: string, amount: Number) {
+    constructor(receiver: string, amount: number) {
         this.receiver = receiver;
         this.amount = amount;
     }
