@@ -12,7 +12,7 @@ export class BlockChain {
 
     append(tx: Transaction): void {
         let head = this.transactions.length > 0 ? this.transactions[this.transactions.length - 1] : null;
-        tx.id = head !== null ? head.id++ : 0;
+        tx.id = head !== null ? head.id + 1 : 0;
         if (head !== null) tx.prevTxId = head.id;
         this.transactions.push(tx);
         logger.info(`Appending transaction with id: ${tx.id} to blockchain.`);
