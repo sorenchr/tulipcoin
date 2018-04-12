@@ -20,13 +20,13 @@ const keys = JSON.parse(fs.readFileSync(args.keys, 'utf8'));
 // Setup environment
 const blockChain = new BlockChain();
 const utxoPool = new UTXOPool();
-const txValidator = new TxValidator(utxoPool);
+const txValidator = new TxValidator(utxoPool, blockChain);
 const restServer = new RestServer(port, txValidator, blockChain, utxoPool);
 const logger = new Logger('server');
 
 // Setup initial transaction
 const outputs = [new Output(keys.public, amount)];
-const initialTx = new Transaction([], outputs, 0, 0);
+const initialTx = new Transaction([], outputs);
 blockChain.append(initialTx);
 outputs.forEach((o, index) => utxoPool.add(new UTXO(initialTx.id, index)));
 logger.info(`Starting server with ${amount} coins.`);
