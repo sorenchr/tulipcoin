@@ -70,9 +70,10 @@ export class RestServer {
         let tx = Transaction.fromJSONString(body);
 
         // Validate the incoming transaction
-        if (!this.txValidator.isValid(tx)) {
+        let validation = this.txValidator.isValid(tx);
+        if (!validation.isValid) {
             res.statusCode = 422;
-            res.write('422 Unprocessable Entity');
+            res.write(validation.error);
             return res.end();
         }
 
