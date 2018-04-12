@@ -32,7 +32,7 @@ export class Router {
         // Extract any parameters from the path
         let params = [];
         let match = route.matches(urlParts.pathname, req.method);
-        if (match.length > 3) params = match.slice(1, match.length - 2);
+        if (match.length > 1) params = match.slice(1);
 
         // Call handler for route
         route.handler.apply(null, [req, res].concat(params));
@@ -44,7 +44,7 @@ export class Router {
      * @param method The HTTP method used by incoming requests to the path.
      * @param handler The handler for the route.
      */
-    addRoute(path: string, method: string, handler: (req: http.IncomingMessage, res: http.ServerResponse) => any) {
+    addRoute(path: string, method: string, handler: (req: http.IncomingMessage, res: http.ServerResponse, ...args) => any) {
         path = path.replace(':string', '([-a-zA-Z0-9@:%._\+~#=]+)');
         path = path.replace(':number', '([0-9]+)');
 
@@ -72,9 +72,9 @@ export class Router {
 class Route {
     pattern: RegExp;
     method: string;
-    handler: (req: http.IncomingMessage, res: http.ServerResponse) => any;
+    handler: (req: http.IncomingMessage, res: http.ServerResponse, ...args) => any;
 
-    constructor(pattern: RegExp, method: string, handler: (req: http.IncomingMessage, res: http.ServerResponse) => any) {
+    constructor(pattern: RegExp, method: string, handler: (req: http.IncomingMessage, res: http.ServerResponse, ...args) => any) {
         this.pattern = pattern;
         this.method = method;
         this.handler = handler;
