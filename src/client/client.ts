@@ -25,7 +25,7 @@ if (args.cmd === 'wallet') {
             console.log('  ' + `You have the following ${total} unspent coins:`);
             res.forEach(o => console.log(`  [\x1b[32m${o.amount}\x1b[0m] \x1b[2m(transaction ID: ${o.txId}, output index: ${o.outputIndex})\x1b[0m`));
         })
-        .catch(err => logger.error(`An error occurred while attempting to retrieve wallet: ${err}.`));
+        .catch(err => logger.error(`An error occurred while attempting to retrieve wallet: ${err}`));
 }
 
 // Check if this is a 'transfer' command
