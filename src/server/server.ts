@@ -8,14 +8,15 @@ import { exitWithMessage } from '../utilities';
 import { Logger } from '../logger';
 import { UTXOPool, UTXO } from './utxo';
 import { TxValidator } from './txvalidator';
+import { config } from '../config';
 
 // Parse arguments
-let args = minimist(process.argv.slice(2));
+const args = minimist(process.argv.slice(2));
 const port = args.p || 8080;
 const amount = !!args.amount ? Number.parseInt(args.amount) : 100;
-if (!args.keys) exitWithMessage('--keys argument is required.');
+if (!args.keys && !config.keys) exitWithMessage('--keys argument is required.');
+const keys = JSON.parse(fs.readFileSync(!!args.keys ? args.keys : config.keys, 'utf8'));
 if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
-const keys = JSON.parse(fs.readFileSync(args.keys, 'utf8'));
 
 // Setup environment
 const blockChain = new BlockChain();
