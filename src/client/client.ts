@@ -13,7 +13,7 @@ if (!args.wallet && !config.wallet) exitWithMessage('--wallet argument is requir
 const host = !!args.host ? args.host : config.host;
 const wallet = JSON.parse(fs.readFileSync(!!args.wallet ? args.wallet : config.wallet, 'utf8'));
 if (!args.cmd) exitWithMessage('--cmd argument is required.');
-if (!['wallet', 'transfer', 'transactions'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\', \'transfer\' or \'transactions    \'.');
+if (!['wallet', 'transfer', 'transactions'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\', \'transfer\' or \'transactions\'.');
 
 // Setup environment
 const restClient = new RestClient(host);
