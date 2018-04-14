@@ -7,11 +7,11 @@ import { Input, Output } from '../transaction';
 import { config } from '../config';
 
 // Parse arguments
-let args = minimist(process.argv.slice(2));
+const args = minimist(process.argv.slice(2));
 if (!args.host && !config.host) exitWithMessage('--host argument is required.');
 if (!args.keys && !config.keys) exitWithMessage('--keys argument is required.');
-let host = !!args.host ? args.host : config.host;
-let keys = JSON.parse(fs.readFileSync(!!args.keys ? args.keys : config.keys, 'utf8'));
+const host = !!args.host ? args.host : config.host;
+const keys = JSON.parse(fs.readFileSync(!!args.keys ? args.keys : config.keys, 'utf8'));
 if (!args.cmd) exitWithMessage('--cmd argument is required.');
 if (!['wallet', 'transfer'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\' or \'transfer\'.');
 
