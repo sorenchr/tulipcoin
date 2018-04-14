@@ -30,6 +30,7 @@ export class RestServer {
         let router = new Router();
 
         router.addRoute('/transactions', 'GET', (req, res) => this.getTransactions(req, res));
+        router.addRoute('/transactions/:number', 'GET', (req, res, id) => this.getTransaction(req, res, id));
         router.addRoute('/transactions', 'POST', (req, res) => this.postTransaction(req, res));
         router.addRoute('/wallets/:string', 'GET', (req, res, publicKey) => this.getWallet(req, res, publicKey));
 
@@ -50,13 +51,32 @@ export class RestServer {
     }
 
     /**
-     * Retrieves all or some of the transactions in the blockchain.
+     * Retrieves all the transactions in the blockchain.
      * @param req The incoming request.
      * @param res The outgoing response.
      */
     private getTransactions(req: http.IncomingMessage, res: http.ServerResponse) {
-        var jsonTxs = this.blockChain.all();
-        res.write(JSON.stringify(jsonTxs));
+        let txs = this.blockChain.all();
+        res.write(JSON.stringify(txs));
+        res.end();
+    }
+
+    /**
+     * Retrieve a single transaction from the blockchain.
+     * @param req The incoming request.
+     * @param res The outgoing response.
+     * @param id The id of the transaction.
+     */
+    private getTransaction(req: http.IncomingMessage, res: http.ServerResponse, id: number) {
+        let tx = this.blockChain.get(Number(id));
+
+        if (tx === undefined) {
+            res.statusCode = 404;
+            res.write('404 Not Found');
+            return res.end();
+        }
+
+        res.write(JSON.stringify(tx));
         res.end();
     }
 

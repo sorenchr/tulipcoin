@@ -14,9 +14,9 @@ import { config } from '../config';
 const args = minimist(process.argv.slice(2));
 const port = args.p || 8080;
 const amount = !!args.amount ? Number.parseInt(args.amount) : 100;
+if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
 if (!args.wallet && !config.wallet) exitWithMessage('--wallet argument is required.');
 const wallet = JSON.parse(fs.readFileSync(!!args.wallet ? args.wallet : config.wallet, 'utf8'));
-if (amount == NaN) exitWithMessage('Amount is not recognized as a valid number');
 
 // Setup environment
 const blockChain = new BlockChain();

@@ -71,4 +71,51 @@ export class RestClient {
             req.end();
         });
     }
+
+    /**
+     * Retrieve the list of blockchain transactions from the server.
+     */
+    getTransactions(): Promise<Array<Transaction>> {
+        const options = {
+            hostname: this.host,
+            port: this.port,
+            path: '/transactions',
+            method: 'GET'
+        };
+
+        return new Promise((resolve, reject) => {
+            let resData = '';
+            const req = http.request(options, res => {
+                res.setEncoding('utf8')
+                res.on('data', chunk => resData += chunk);
+                res.on('end', () => res.statusCode === 200 ? resolve(JSON.parse(resData)) : reject(resData));
+            });
+            req.on('error', err => reject(err));
+            req.end();
+        });
+    }
+
+    /**
+     * Retrieve a single blockchain transaction from the server.
+     * @param id The id of the transaction to retrieve.
+     */
+    getTransaction(id: number): Promise<Transaction> {
+        const options = {
+            hostname: this.host,
+            port: this.port,
+            path: '/transactions/' + id,
+            method: 'GET'
+        };
+
+        return new Promise((resolve, reject) => {
+            let resData = '';
+            const req = http.request(options, res => {
+                res.setEncoding('utf8')
+                res.on('data', chunk => resData += chunk);
+                res.on('end', () => res.statusCode === 200 ? resolve(JSON.parse(resData)) : reject(resData));
+            });
+            req.on('error', err => reject(err));
+            req.end();
+        });
+    }
 }

@@ -3,7 +3,7 @@ import * as minimist from 'minimist';
 import * as fs from 'fs';
 import { exitWithMessage } from '../utilities';
 import { Logger } from '../logger';
-import { Input, Output } from '../transaction';
+import { Input, Output, Transaction } from '../transaction';
 import { config } from '../config';
 
 // Parse arguments
@@ -13,7 +13,7 @@ if (!args.wallet && !config.wallet) exitWithMessage('--wallet argument is requir
 const host = !!args.host ? args.host : config.host;
 const wallet = JSON.parse(fs.readFileSync(!!args.wallet ? args.wallet : config.wallet, 'utf8'));
 if (!args.cmd) exitWithMessage('--cmd argument is required.');
-if (!['wallet', 'transfer'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\' or \'transfer\'.');
+if (!['wallet', 'transfer', 'transactions'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\', \'transfer\' or \'transactions    \'.');
 
 // Setup environment
 const restClient = new RestClient(host);
@@ -50,4 +50,34 @@ if (args.cmd === 'transfer') {
     restClient.postTransaction(txInputs, txOutputs)
         .then(() => logger.info(`Transaction was succesfully added to blockchain.`))
         .catch(err => logger.error(`An error occurred while attempting to transfer coins: ${err}.`));
+}
+
+// Check if this is a 'transactions' command
+if (args.cmd === 'transactions') {
+    // Check if the client is requesting just a single transaction
+    if (!!args.id) {
+        const id = Number.parseInt(args.id);
+        if (id == NaN) exitWithMessage('ID is not recognized as a valid number');
+        restClient.getTransaction(id)
+            .then(tx => printTransaction(tx))
+            .catch(err => logger.error(`An error occured while attempting to retrieve transaction: ${err}`));
+    } else {
+        restClient.getTransactions()
+            .then(txs => {
+                let sortedTxs = txs.sort((tx1, tx2) => tx1.id - tx2.id);
+                console.log('  ' + `Retrieved the following ${sortedTxs.length} transaction(s):`);
+                sortedTxs.forEach(tx => printTransaction(tx));
+            })
+            .catch(err => logger.error(`An error occured while attempting to retrieve transactions: ${err}`)); 
+    }
+}
+
+function printTransaction(tx: Transaction) {
+    console.log('    ' + `\x1b[4m● Transaction ID: ${tx.id}, previous transaction ID: ${tx.prevTxId}.\x1b[0m`);
+    
+    if (tx.inputs.length > 0) console.log('      ' + '\x1b[2m→ Inputs:\x1b[0m');
+    tx.inputs.forEach((input, index) => console.log('        ' + `${index + 1}.  Transaction ID: ${input.txId}, output index: ${input.outputId}.`));
+
+    console.log('      ' + '\x1b[2m← Outputs:\x1b[0m');
+    tx.outputs.forEach((output, index) => console.log('        ' + `${index + 1}.  Receiver: ${output.receiver}, amount: ${output.amount}.`));
 }
