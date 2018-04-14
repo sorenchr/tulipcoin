@@ -2,5 +2,5 @@
     "cryptoAlgorithm": "",
     "host": "localhost:8080",
     "port": 8080,
-    "keys": "wallet.json"
+    "wallet": "wallet.json"
 }

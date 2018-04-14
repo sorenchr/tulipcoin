@@ -9,9 +9,9 @@ import { config } from '../config';
 // Parse arguments
 const args = minimist(process.argv.slice(2));
 if (!args.host && !config.host) exitWithMessage('--host argument is required.');
-if (!args.keys && !config.keys) exitWithMessage('--keys argument is required.');
+if (!args.wallet && !config.wallet) exitWithMessage('--wallet argument is required.');
 const host = !!args.host ? args.host : config.host;
-const keys = JSON.parse(fs.readFileSync(!!args.keys ? args.keys : config.keys, 'utf8'));
+const wallet = JSON.parse(fs.readFileSync(!!args.wallet ? args.wallet : config.wallet, 'utf8'));
 if (!args.cmd) exitWithMessage('--cmd argument is required.');
 if (!['wallet', 'transfer'].includes(args.cmd)) exitWithMessage('--cmd must be either \'wallet\' or \'transfer\'.');
 
@@ -21,7 +21,7 @@ const logger = new Logger('client');
 
 // Check if this is a 'wallet' command
 if (args.cmd === 'wallet') {
-    restClient.getWallet(keys.public)
+    restClient.getWallet(wallet.public)
         .then(res => {
             let total = res.reduce((acc, o) => acc + o.amount, 0);
             console.log('  ' + `You have the following ${total} unspent coins:`);
