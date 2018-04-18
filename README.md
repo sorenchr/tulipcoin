@@ -26,7 +26,7 @@ With a centralized model of control it is much easier to enforce your will on ot
 
 By default, Tulipcoin will search for a `tulipconfig.json` file in your working directory. A configuration file contains values for some central parameters:
 
-```json
+```json5
 {
     "keySize": 512, // system-wide size of wallet RSA keys in bits
     "host": "localhost:8080", // the server host
