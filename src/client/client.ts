@@ -47,7 +47,7 @@ if (args.cmd === 'transfer') {
     let txOutputs = outputs.map(o => new Output(o[0], Number(o[1])));
 
     // Send a "Transfer coins" transaction to the server
-    restClient.postTransaction(txInputs, txOutputs)
+    restClient.postTransaction(txInputs, txOutputs, wallet.private, wallet.public)
         .then(() => logger.info(`Transaction was succesfully added to blockchain.`))
         .catch(err => logger.error(`An error occurred while attempting to transfer coins: ${err}.`));
 }

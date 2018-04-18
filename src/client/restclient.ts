@@ -2,6 +2,8 @@ import * as http from 'http';
 import * as querystring from 'querystring';
 import { Transaction, Input, Output } from '../transaction';
 import { UTXO } from '../server/utxo';
+import * as NodeRSA from 'node-rsa';
+import * as shajs from 'sha.js';
 
 export class RestClient {
     host: string;
@@ -20,8 +22,9 @@ export class RestClient {
      * @param to The public key that the coins are transferred to.
      * @param prevTx The previous transaction that contains the coins needed for this transaction.
      */
-    postTransaction(inputs: Array<Input>, outputs: Array<Output>): Promise<string> {
-        let tx = new Transaction(inputs, outputs);
+    postTransaction(inputs: Array<Input>, outputs: Array<Output>, privateKey: string, publicKey: string): Promise<string> {
+        let tx = new Transaction(inputs, outputs, publicKey);
+        tx.sign(privateKey);
         let body = JSON.stringify(tx);
 
         const options = {
@@ -53,10 +56,12 @@ export class RestClient {
      * @param publicKey The public key of the wallet.
      */
     getWallet(publicKey: string): Promise<Array<{txId: number, outputIndex: number, amount: number}>> {
+        let publicKeyHash = shajs('sha256').update(publicKey).digest('hex');
+
         const options = {
             hostname: this.host,
             port: this.port,
-            path: '/wallets/' + publicKey,
+            path: '/wallets/' + publicKeyHash,
             method: 'GET'
         };
 
