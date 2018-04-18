@@ -182,6 +182,12 @@ It's also possible to setup a TypeScript watcher that compiles automatically on 
 $ npm run watch
 ```
 
+To generate documentation using TypeDoc:
+
+```console
+$ npm run docs
+```
+
 ## Requirements
 
 Node.JS is required.
