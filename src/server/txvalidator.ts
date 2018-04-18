@@ -2,6 +2,7 @@ import { UTXOPool, UTXO } from './utxo';
 import { Transaction } from '../transaction';
 import { Logger } from '../logger';
 import { BlockChain } from './blockchain';
+import * as shajs from 'sha.js';
 
 const logger = new Logger('txvalidator');
 
@@ -16,6 +17,25 @@ export class TxValidator {
 
     isValid(tx: Transaction) {
         logger.info('Validating new transaction.');
+
+        // Verify the signature
+        if (!tx.verifySignature()) {
+            let error = 'Transaction signature is invalid.';
+            logger.error(error);
+            return new ValidationResult(false, error);
+        }
+
+        // Verify that the hash of the public key matches the inputs
+        const publicKeyHash = shajs('sha256').update(tx.publicKey).digest('hex');
+        for (var i = 0; i < tx.inputs.length; i++) {
+            let inputTx = this.blockChain.get(tx.inputs[i].txId);
+            if (inputTx.outputs[tx.inputs[i].outputId].receiver !== publicKeyHash) {
+                let error = `Transaction input owner (transaction ID: ${tx.inputs[i].txId}, output index: `
+                    + `${tx.inputs[i].outputId}) does not match SHA256 hash of public key`;
+                logger.error(error);
+                return new ValidationResult(false, error);
+            }
+        }
 
         // Check that all inputs are in the UTXO pool
         for (var i = 0; i < tx.inputs.length; i++) {
