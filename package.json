@@ -5,10 +5,8 @@
   "main": "client.js",
   "scripts": {
     "docs": "node_modules/typedoc/bin/typedoc --out docs/ --target ES6 --ignoreCompilerErrors",
-    "build": "node_modules/typescript/bin/tsc --p ../tsconfig.json",
-    "watch": "node_modules/typescript/bin/tsc --watch --p ../tsconfig.json",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "pwd": "pwd"
+    "build": "node_modules/typescript/bin/tsc --p ./",
+    "watch": "node_modules/typescript/bin/tsc --watch --p ./"
   },
   "repository": {
     "type": "git",
@@ -31,7 +29,6 @@
   },
   "devDependencies": {
     "@types/minimist": "^1.2.0",
-    "@types/node-rsa": "^0.4.3",
     "typedoc": "^0.11.1",
     "typescript": "^2.7.2"
   }

@@ -1,9 +1,9 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
         "lib": ["es7"],
         "outDir": "build/",
     },
     "include": ["src/**/*"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules"],
+    "sourceMap": true
 }
