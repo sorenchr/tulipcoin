@@ -1,5 +1,5 @@
 {
-    "cryptoAlgorithm": "",
+    "keySize": 512,
     "host": "localhost:8080",
     "port": 8080,
     "wallet": "wallet.json"
