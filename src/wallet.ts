@@ -1,18 +1,23 @@
-import * as keypair from 'keypair';
+import * as NodeRSA from 'node-rsa';
 import * as minimist from 'minimist';
 import * as fs from 'fs';
+import { config } from './config';
+import { exitWithMessage } from './utilities';
 
 // Parse arguments
 let args = minimist(process.argv.slice(2));
-const bits = args.b || 256;
+const bits = Number.parseInt(!!args.b ? args.b : !!config.keySize ? config.keySize : 512);
+if (bits == NaN) exitWithMessage('Keysize in bits is not recognized as a valid number');
 
-// Generate keys and strip them from their headers and footers
-let keys = keypair({ bits: bits });
-keys.public = keys.public.match('-----BEGIN RSA PUBLIC KEY-----\n(.*?)\n-----END RSA PUBLIC KEY-----\n').pop();
-keys.private = keys.private.replace(/(?:\r\n|\r|\n)/g, '').match('-----BEGIN RSA PRIVATE KEY-----(.*?)-----END RSA PRIVATE KEY-----', 'm').pop();
+// Generate wallet
+let key = new NodeRSA({ b: bits });
+let wallet = {
+    public: key.exportKey('pkcs1-public-pem'),
+    private: key.exportKey('pkcs1-private-pem')
+};
 
-// Check if the keys should be saved to a file
-if (!!args.o) fs.writeFileSync(args.o, JSON.stringify(keys), 'utf8');
+// Check if the wallet should be saved to a file
+if (!!args.o) fs.writeFileSync(args.o, JSON.stringify(wallet), 'utf8');
 
-// Display the keys to the user
-console.log(keys);
+// Display the wallet to the user
+console.log(wallet);

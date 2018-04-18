@@ -4,9 +4,11 @@
   "description": "Tulipcoin is the hot new cryptocurrency without all the fat of all the other popular cryptocurrencies on the market: security, performance, scalability and decentralisation.",
   "main": "client.js",
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc",
-    "watch": "./node_modules/typescript/bin/tsc -watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docs": "node_modules/typedoc/bin/typedoc --out docs/ --target ES6 --ignoreCompilerErrors",
+    "build": "node_modules/typescript/bin/tsc --p ../tsconfig.json",
+    "watch": "node_modules/typescript/bin/tsc --watch --p ../tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pwd": "pwd"
   },
   "repository": {
     "type": "git",
@@ -23,12 +25,14 @@
   },
   "homepage": "https://github.com/sorenchr/tulipcoin#readme",
   "dependencies": {
-    "keypair": "^1.0.1",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "node-rsa": "^0.4.2",
+    "sha.js": "^2.4.11"
   },
   "devDependencies": {
-    "@types/node": "^9.4.6",
-    "tslint": "^5.9.1",
+    "@types/minimist": "^1.2.0",
+    "@types/node-rsa": "^0.4.3",
+    "typedoc": "^0.11.1",
     "typescript": "^2.7.2"
   }
 }
